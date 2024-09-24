@@ -87,7 +87,7 @@
 
 Окно регистрации нового пользователя.  
 
-![Окно регистрации нового пользователя](https://https://github.com/allapugacheva/EventsMap/blob/main/images/signIn.png) 
+![Окно регистрации нового пользователя](https://github.com/allapugacheva/EventsMap/blob/main/images/signIn.png) 
 
 Окно просмотра детализированной информации о событии. 
 
