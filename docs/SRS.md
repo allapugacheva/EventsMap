@@ -83,7 +83,7 @@
 ## 2.2 Интерфейс пользователя
 Главное окно приложения.  
 
-![Главное окно приложения](https://https://github.com/allapugacheva/EventsMap/tree/main/images/main.png)  
+![Главное окно приложения](https://github.com/allapugacheva/EventsMap/tree/main/images/main.png)  
 
 Окно регистрации нового пользователя.  
 
@@ -91,11 +91,12 @@
 
 Окно просмотра детализированной информации о событии. 
 
-![Окно просмотра детализированной информации о событии](https://https://github.com/allapugacheva/EventsMap/tree/main/images/eventDetails.png)  
+![Окно просмотра детализированной информации о событии](https://github.com/allapugacheva/EventsMap/tree/main/images/eventDetails.png)  
 
 Окно добавления нового события.  
 
-![Окно добавления нового события](https://https://github.com/allapugacheva/EventsMap/tree/main/images/addEvent.png).
+![Окно добавления нового события](https://github.com/allapugacheva/EventsMap/tree/main/images/addEvent.png).
+                                   
 
 <a name="user_specifications"/>
 
