@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html>
+<head>
+    
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+    
+        <script>
+            L_NO_TOUCH = false;
+            L_DISABLE_3D = false;
+        </script>
+    
+    <style>html, body {width: 100%;height: 100%;margin: 0;padding: 0;}</style>
+    <style>#map {position:absolute;top:0;bottom:0;right:0;left:0;}</style>
+    <script src="https://cdn.jsdelivr.net/npm/leaflet@1.9.3/dist/leaflet.js"></script>
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Leaflet.awesome-markers/2.0.2/leaflet.awesome-markers.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/leaflet@1.9.3/dist/leaflet.css"/>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/css/bootstrap.min.css"/>
+    <link rel="stylesheet" href="https://netdna.bootstrapcdn.com/bootstrap/3.0.0/css/bootstrap-glyphicons.css"/>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.2.0/css/all.min.css"/>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/Leaflet.awesome-markers/2.0.2/leaflet.awesome-markers.css"/>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/python-visualization/folium/folium/templates/leaflet.awesome.rotate.min.css"/>
+    
+            <meta name="viewport" content="width=device-width,
+                initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+            <style>
+                #map_96cc79fd51a533d6897f007a7f4457c9 {
+                    position: relative;
+                    width: 100.0%;
+                    height: 100.0%;
+                    left: 0.0%;
+                    top: 0.0%;
+                }
+                .leaflet-container { font-size: 1rem; }
+            </style>
+        
+</head>
+<body>
+    
+    
+            <div class="folium-map" id="map_96cc79fd51a533d6897f007a7f4457c9" ></div>
+        
+</body>
+<script>
+    
+    
+            var map_96cc79fd51a533d6897f007a7f4457c9 = L.map(
+                "map_96cc79fd51a533d6897f007a7f4457c9",
+                {
+                    center: [53.1630039, 26.0284252],
+                    crs: L.CRS.EPSG3857,
+                    zoom: 13,
+                    zoomControl: true,
+                    preferCanvas: false,
+                }
+            );
+            function handleMapChanges(event) {
+                if(lastSelectedMarker) {
+                    lastSelectedMarker.setIcon(defaultIcon);
+                    lastSelectedMarker = null;
+                }
+
+                var bounds = map_96cc79fd51a533d6897f007a7f4457c9.getBounds();
+
+                var northWest = bounds.getNorthWest();
+                var southEast = bounds.getSouthEast();
+
+                fetch('http://localhost:3001', {
+                    method: 'POST',
+                    mode: 'no-cors',
+                    headers: {
+                        'Accept': 'application/json',
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        northWest: {
+                            lat: northWest.lat,
+                            lng: northWest.lng
+                        },
+                        southEast: {
+                            lat: southEast.lat,
+                            lng: southEast.lng
+                        }
+                    })
+                });                
+            }
+
+            map_96cc79fd51a533d6897f007a7f4457c9.on('moveend', handleMapChanges);
+
+            map_96cc79fd51a533d6897f007a7f4457c9.on('click', handleMapChanges);
+
+            function getCenterCoordinates() {
+                var center = map_96cc79fd51a533d6897f007a7f4457c9.getCenter();
+                return center.lat + ', ' + center.lng;
+            }
+
+            var lastSelectedMarker = null;
+
+            var defaultIcon = new L.Icon.Default();
+
+            var redIcon = new L.Icon({
+                iconUrl: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-red.png',
+                iconSize: [25, 41],
+                iconAnchor: [12, 41],
+                popupAnchor: [1, -34],
+                shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-shadow.png',
+                shadowSize: [41, 41]
+            });
+
+            function sendMarkerName(name) {
+                fetch('http://localhost:3001', {
+                    method: 'POST',
+                    mode: 'no-cors',
+                    headers: {
+                        'Accept': 'application/json',
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        name: name // Используем переданное имя
+                    })
+                });
+            }
+        
+            
+
+        
+    
+            var tile_layer_4f5f707120af067bb41ae387adf177e0 = L.tileLayer(
+                "https://tile.openstreetmap.org/{z}/{x}/{y}.png",
+                {"attribution": "\u0026copy; \u003ca href=\"https://www.openstreetmap.org/copyright\"\u003eOpenStreetMap\u003c/a\u003e contributors", "detectRetina": false, "maxNativeZoom": 19, "maxZoom": 19, "minZoom": 0, "noWrap": false, "opacity": 1, "subdomains": "abc", "tms": false}
+            );
+        
+    
+            tile_layer_4f5f707120af067bb41ae387adf177e0.addTo(map_96cc79fd51a533d6897f007a7f4457c9);
+        
+    
+            var marker_1d42ed6fa17f674286036ac6cbb2793e = L.marker(
+                [53.1642, 26.0254],
+                {}
+            ).addTo(map_96cc79fd51a533d6897f007a7f4457c9);
+        
+    
+            marker_1d42ed6fa17f674286036ac6cbb2793e.bindTooltip(
+                `<div>
+                     сходка мопсов
+                 </div>`,
+                {"sticky": true}
+            );               
+            marker_1d42ed6fa17f674286036ac6cbb2793e.on('click', function(event) {
+
+                if(lastSelectedMarker) {
+                    lastSelectedMarker.setIcon(defaultIcon);
+                }
+
+                marker_1d42ed6fa17f674286036ac6cbb2793e.setIcon(redIcon);
+                lastSelectedMarker = marker_1d42ed6fa17f674286036ac6cbb2793e;
+
+                sendMarkerName('сходка мопсов')
+            });
+                
+</script>
+</html>

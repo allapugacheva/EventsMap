@@ -3,18 +3,16 @@ from PyQt5.QtWidgets import QMessageBox
 from geopy.geocoders import Nominatim
 from event import Event
 from mysql.connector import Error
+from PyQt5.QtCore import QDateTime
 
 class Ui_AddEventDialog(object):
-    def setupUi(self, AddEventDialog):
+    def setupUi(self, AddEventDialog, user):
         AddEventDialog.setObjectName("AddEventDialog")
-        AddEventDialog.setFixedSize(340, 400)
+        AddEventDialog.setFixedSize(340, 345)
         AddEventDialog.setWindowTitle("Добавление события")
         self.AddEventDialog = AddEventDialog
-
-        self.addressFrame = QtWidgets.QLabel(AddEventDialog)
-        self.addressFrame.setGeometry(QtCore.QRect(18, 248, 304, 94))
-        self.addressFrame.setFrameShape(QtWidgets.QFrame.Box)
-        self.addressFrame.setObjectName("addressFrame")
+        self.edit = False
+        self.user = user
 
         self.eventNameLabel = QtWidgets.QLabel(AddEventDialog)
         self.eventNameLabel.setGeometry(QtCore.QRect(20, 10, 200, 30))
@@ -66,6 +64,8 @@ class Ui_AddEventDialog(object):
 
         self.dateTimeEdit = QtWidgets.QDateTimeEdit(AddEventDialog)
         self.dateTimeEdit.setGeometry(QtCore.QRect(20, 180, 300, 30))
+        self.dateTimeEdit.setButtonSymbols(QtWidgets.QAbstractSpinBox.NoButtons)
+        self.dateTimeEdit.setDateTime(QDateTime.currentDateTime())
         font = QtGui.QFont()
         font.setPointSize(10)
         font.setBold(True)
@@ -73,32 +73,14 @@ class Ui_AddEventDialog(object):
         self.dateTimeEdit.setFont(font)
         self.dateTimeEdit.setObjectName("dateTimeEdit")
 
-        self.cityLine = QtWidgets.QLineEdit(AddEventDialog)
-        self.cityLine.setGeometry(QtCore.QRect(120, 250, 200, 30))
+        self.addressLine = QtWidgets.QLineEdit(AddEventDialog)
+        self.addressLine.setGeometry(QtCore.QRect(20, 250, 300, 30))
         font = QtGui.QFont()
         font.setPointSize(10)
         font.setBold(True)
         font.setWeight(75)
-        self.cityLine.setFont(font)
-        self.cityLine.setObjectName("cityLine")
-
-        self.streetLine = QtWidgets.QLineEdit(AddEventDialog)
-        self.streetLine.setGeometry(QtCore.QRect(120, 280, 200, 30))
-        font = QtGui.QFont()
-        font.setPointSize(10)
-        font.setBold(True)
-        font.setWeight(75)
-        self.streetLine.setFont(font)
-        self.streetLine.setObjectName("streetLine")
-
-        self.houseLine = QtWidgets.QLineEdit(AddEventDialog)
-        self.houseLine.setGeometry(QtCore.QRect(120, 310, 200, 30))
-        font = QtGui.QFont()
-        font.setPointSize(10)
-        font.setBold(True)
-        font.setWeight(75)
-        self.houseLine.setFont(font)
-        self.houseLine.setObjectName("houseLine")
+        self.addressLine.setFont(font)
+        self.addressLine.setObjectName("addressLine")
 
         self.addressLabel = QtWidgets.QLabel(AddEventDialog)
         self.addressLabel.setGeometry(QtCore.QRect(20, 220, 200, 30))
@@ -110,42 +92,8 @@ class Ui_AddEventDialog(object):
         self.addressLabel.setObjectName("addressLabel")
         self.addressLabel.setText("Адрес события:")
 
-        self.cityLabel = QtWidgets.QLabel(AddEventDialog)
-        self.cityLabel.setGeometry(QtCore.QRect(20, 250, 100, 30))
-        font = QtGui.QFont()
-        font.setPointSize(10)
-        font.setBold(True)
-        font.setWeight(75)
-        self.cityLabel.setFont(font)
-        self.cityLabel.setAlignment(QtCore.Qt.AlignCenter)
-        self.cityLabel.setObjectName("cityLabel")
-        self.cityLabel.setText("Город:")
-
-        self.streetLabel = QtWidgets.QLabel(AddEventDialog)
-        self.streetLabel.setGeometry(QtCore.QRect(20, 280, 100, 30))
-        font = QtGui.QFont()
-        font.setPointSize(10)
-        font.setBold(True)
-        font.setWeight(75)
-        self.streetLabel.setFont(font)
-        self.streetLabel.setAlignment(QtCore.Qt.AlignCenter)
-        self.streetLabel.setObjectName("streetLabel")
-        self.streetLabel.setText("Улица:")
-
-        self.houseLabel = QtWidgets.QLabel(AddEventDialog)
-        self.houseLabel.setGeometry(QtCore.QRect(20, 310, 100, 30))
-        font = QtGui.QFont()
-        font.setPointSize(10)
-        font.setBold(True)
-        font.setWeight(75)
-        self.houseLabel.setFont(font)
-        self.houseLabel.setAlignment(QtCore.Qt.AlignCenter)
-        self.houseLabel.setObjectName("houseLabel")
-        self.houseLabel.setText("Дом:")
-
         self.addButton = QtWidgets.QPushButton(AddEventDialog)
-        self.addButton.setGeometry(QtCore.QRect(30, 355, 130, 35))
-        self.addButton.setMinimumSize(QtCore.QSize(0, 0))
+        self.addButton.setGeometry(QtCore.QRect(30, 295, 130, 35))
         font = QtGui.QFont()
         font.setPointSize(9)
         font.setBold(True)
@@ -156,7 +104,7 @@ class Ui_AddEventDialog(object):
         self.addButton.clicked.connect(self.onAddButtonClicked)
 
         self.cancelButton = QtWidgets.QPushButton(AddEventDialog)
-        self.cancelButton.setGeometry(QtCore.QRect(180, 355, 130, 35))
+        self.cancelButton.setGeometry(QtCore.QRect(180, 295, 130, 35))
         font = QtGui.QFont()
         font.setPointSize(9)
         font.setBold(True)
@@ -166,19 +114,37 @@ class Ui_AddEventDialog(object):
         self.cancelButton.setText("Отмена")
         self.cancelButton.clicked.connect(AddEventDialog.close)
 
+    def enableEdit(self, name, description, datetime, address):
+        self.enableEdit = True
+        self.eventNameLine.setText(name)
+        self.descriptionLine.setText(description)
+        self.dateTimeEdit.setDateTime(QDateTime.fromString(datetime, "yyyy-MM-dd HH:mm"))
+        self.addressLine.setText(address)
+
     def onAddButtonClicked(self):
         try:
-            address = ",".join(filter(None, [self.cityLine.text(), self.streetLine.text(), self.houseLine.text()]))
+            if self.dateTimeEdit.dateTime() < QDateTime.currentDateTime():
+                raise ValueError("Событие не может быть в прошлом")
+            if self.eventNameLine.text().strip() == "":
+                raise ValueError("Укажите название события")
+            if self.descriptionLine.text().strip() == "":
+                raise ValueError("Укажите описание события")
+            if self.addressLine.text().strip == "":
+                raise ValueError("Укажите адрес события")
+
             geolocator = Nominatim(user_agent="alla123425")
-            location = geolocator.geocode(address)
+            location = geolocator.geocode(self.addressLine.text())
 
             if location:
-                self.currentEvent = Event(0, self.eventNameLine.text(), self.descriptionLine.text(), "я", self.dateTimeEdit.dateTime().toString("yyyy-MM-dd HH:mm:ss"), self.cityLine.text(), self.streetLine.text(), self.houseLine.text(), location.latitude, location.longitude)
+                if self.edit:
+                    self.currentEvent = Event(self.eventNameLine.text(), self.descriptionLine.text(), self.dateTimeEdit.dateTime().toString("yyyy-MM-dd HH:mm"), self.addressLine.text(), location.latitude, location.longitude)
+                else:
+                    self.currentEvent = Event(self.eventNameLine.text(), self.descriptionLine.text(), self.user, self.dateTimeEdit.dateTime().toString("yyyy-MM-dd HH:mm"), self.addressLine.text(), location.latitude, location.longitude)
                 self.AddEventDialog.accept()
             else:
                 raise ValueError("Адрес не найден")
         except ValueError as e:
-            QMessageBox.warning(self.AddEventDialog, "Неверный адрес", e, QMessageBox.Ok)
+            QMessageBox.warning(self.AddEventDialog, "Неверный адрес", str(e), QMessageBox.Ok)
         except Error as e:
             QMessageBox.warning(self.AddEventDialog, "Ошибка при соединении с БД", e, QMessageBox.Ok)
 
