@@ -13,7 +13,7 @@ from findDialog import Ui_FindDialog
 from datetime import datetime
 
 class Ui_MainWindow(object):
-    def setupUi(self, MainWindow):
+    def setup_ui(self, MainWindow):
         MainWindow.setObjectName("MainWindow")
         MainWindow.setFixedSize(900, 600)
         MainWindow.setWindowTitle("Карта событий")
@@ -41,13 +41,13 @@ class Ui_MainWindow(object):
                         if events:
                             for event in events:
                                 if datetime.strptime(event[3], "%Y-%m-%d %H:%M") > datetime.now().replace(second=0, microsecond=0):
-                                    self.currentEvents.append(Event(event[0], event[1], event[2], event[3], event[4], event[5], event[6], True))
+                                    self.currentEvents.append(Event(event[0], event[1], event[3], event[4], event[5], event[6], event[2], True))
                                 else:
-                                    delete_event_query = f"""
+                                    deleteEventQuery = f"""
                                     DELETE FROM event
                                     WHERE name = '{event[0]}';
                                     """
-                                    cursor.execute(delete_event_query)
+                                    cursor.execute(deleteEventQuery)
                                     connection.commit()
         except Error:
             raise
@@ -77,7 +77,7 @@ class Ui_MainWindow(object):
         font.setWeight(75)
         self.eventsList.setFont(font)
         self.eventsList.setObjectName("eventsList")
-        self.eventsList.clicked.connect(self.onItemClicked)
+        self.eventsList.clicked.connect(self.on_item_clicked)
 
         self.inoutButton = QtWidgets.QPushButton(self.centralwidget)
         self.inoutButton.setGeometry(QtCore.QRect(600, 0, 100, 40))
@@ -88,7 +88,7 @@ class Ui_MainWindow(object):
         self.inoutButton.setFont(font)
         self.inoutButton.setObjectName("inoutButton")
         self.inoutButton.setText("Вход")
-        self.inoutButton.clicked.connect(self.onInOutButtonClicked)
+        self.inoutButton.clicked.connect(self.on_in_out_button_clicked)
 
         self.registerButton = QtWidgets.QPushButton(self.centralwidget)
         self.registerButton.setGeometry(QtCore.QRect(700, 0, 100, 40))
@@ -99,7 +99,7 @@ class Ui_MainWindow(object):
         self.registerButton.setFont(font)
         self.registerButton.setObjectName("registerButton")
         self.registerButton.setText("Регистрация")
-        self.registerButton.clicked.connect(self.onRegisterButtonClicked)
+        self.registerButton.clicked.connect(self.on_register_button_clicked)
 
         self.profileStatsButton = QtWidgets.QPushButton(self.centralwidget)
         self.profileStatsButton.setGeometry(QtCore.QRect(800, 0, 100, 40))
@@ -110,7 +110,7 @@ class Ui_MainWindow(object):
         self.profileStatsButton.setFont(font)
         self.profileStatsButton.setObjectName("profileStatsButton")
         self.profileStatsButton.setText("Гость")
-        self.profileStatsButton.clicked.connect(self.onProfileStatisticsButtonClicked)
+        self.profileStatsButton.clicked.connect(self.on_profile_statistics_button_clicked)
         self.profileStatsButton.setEnabled(False)
 
         self.addEventButton = QtWidgets.QPushButton(self.centralwidget)
@@ -122,7 +122,7 @@ class Ui_MainWindow(object):
         self.addEventButton.setFont(font)
         self.addEventButton.setObjectName("addEventButton")
         self.addEventButton.setText("Добавить")
-        self.addEventButton.clicked.connect(self.onAddEventButtonClicked)
+        self.addEventButton.clicked.connect(self.on_add_event_button_clicked)
         self.addEventButton.setEnabled(False)
 
         self.deleteEventButton = QtWidgets.QPushButton(self.centralwidget)
@@ -135,7 +135,7 @@ class Ui_MainWindow(object):
         self.deleteEventButton.setObjectName("deleteEventButton")
         self.deleteEventButton.setText("Удалить")
         self.deleteEventButton.setEnabled(False)
-        self.deleteEventButton.clicked.connect(self.onDeleteEventButtonClicked)
+        self.deleteEventButton.clicked.connect(self.on_delete_event_button_clicked)
 
         self.editButton = QtWidgets.QPushButton(self.centralwidget)
         self.editButton.setGeometry(QtCore.QRect(700, 560, 100, 40))
@@ -147,7 +147,7 @@ class Ui_MainWindow(object):
         self.editButton.setObjectName("editButton")
         self.editButton.setText("Изменить")
         self.editButton.setEnabled(False)
-        self.editButton.clicked.connect(lambda: self.onAddEventButtonClicked(True))
+        self.editButton.clicked.connect(lambda: self.on_add_event_button_clicked(True))
 
         self.findButton = QtWidgets.QPushButton(self.centralwidget)
         self.findButton.setGeometry(QtCore.QRect(600, 525, 35, 35))
@@ -158,7 +158,7 @@ class Ui_MainWindow(object):
         self.findButton.setFont(font)
         self.findButton.setObjectName("findButton")  
         self.findButton.setText("🔍") 
-        self.findButton.clicked.connect(self.onFindButtonClicked)
+        self.findButton.clicked.connect(self.on_find_button_clicked)
         self.findButton.raise_()  
 
         self.verticalLayoutWidget = QtWidgets.QWidget(self.centralwidget)
@@ -171,35 +171,35 @@ class Ui_MainWindow(object):
 
         self.webView = QWebEngineView()
         self.mapLayout.addWidget(self.webView)
-        self.reloadMap()
-        self.webView.loadFinished.connect(lambda: self.webView.page().runJavaScript(f"{self.map.map_variable_name}.fire('moveend');") )
+        self.reload_map()
+        self.webView.loadFinished.connect(lambda: self.webView.page().runJavaScript(f"{self.map.mapVariableName}.fire('moveend');") )
 
         MainWindow.setCentralWidget(self.centralwidget)         
 
-    def onFindButtonClicked(self):
+    def on_find_button_clicked(self):
         dialogFind = QtWidgets.QDialog()
         dialogFindUi = Ui_FindDialog()
-        dialogFindUi.setupUi(dialogFind, self.currentEvents)
+        dialogFindUi.setup_ui(dialogFind, self.currentEvents)
         dialogFind.setModal(True)
         if dialogFind.exec_() == QMessageBox.Accepted:
             if dialogFindUi.location:
                 self.lastCoordinates = dialogFindUi.location
-                self.webView.loadFinished.connect(lambda: self.webView.page().runJavaScript(f"{self.map.map_variable_name}.fire('moveend');") )                
-                self.reloadMap()
+                self.webView.loadFinished.connect(lambda: self.webView.page().runJavaScript(f"{self.map.mapVariableName}.fire('moveend');") )                
+                self.reload_map()
             else:
                 for event in self.currentEvents:
                     if event.name == dialogFindUi.name:
                         self.lastCoordinates = (event.latitude, event.longitude)
                         self.webView.loadFinished.connect(lambda: self.webView.page().runJavaScript(f"{self.map.markers[event.name]}.fireEvent('click');") )
-                        self.reloadMap()
+                        self.reload_map()
                         break
 
-    def onInOutButtonClicked(self):
+    def on_in_out_button_clicked(self):
         if(self.userIn == False):
             self.userIn = True
             dialogProfile = QtWidgets.QDialog()
             dialogProfileUi = Ui_inProfileDialog()
-            dialogProfileUi.setupUi(dialogProfile)
+            dialogProfileUi.setup_ui(dialogProfile)
             dialogProfile.setModal(True)
             if dialogProfile.exec_() == QMessageBox.Accepted:
                 self.user = dialogProfileUi.currentUser
@@ -208,7 +208,7 @@ class Ui_MainWindow(object):
                 self.profileStatsButton.setEnabled(True)
                 self.registerButton.setText("Изменить")
                 self.addEventButton.setEnabled(True)
-                self.reloadMap()   
+                self.reload_map()   
         else:
             self.userIn = False
             self.inoutButton.setText("Вход")
@@ -219,11 +219,11 @@ class Ui_MainWindow(object):
             self.deleteEventButton.setEnabled(False)
             self.editButton.setEnabled(False)
 
-    def onRegisterButtonClicked(self):
+    def on_register_button_clicked(self):
         if self.userIn == False:
             dialogProfile = QtWidgets.QDialog()
             dialogProfileUi = Ui_CreateProfileDialog()
-            dialogProfileUi.setupUi(dialogProfile)
+            dialogProfileUi.setup_ui(dialogProfile)
             dialogProfile.setModal(True)
             if dialogProfile.exec_() == QMessageBox.Accepted:
                 self.userIn = True
@@ -233,17 +233,17 @@ class Ui_MainWindow(object):
                 self.profileStatsButton.setEnabled(True)
                 self.registerButton.setText("Изменить")
                 self.addEventButton.setEnabled(True)
-                self.reloadMap()   
+                self.reload_map()   
         else:
             dialogProfile = QtWidgets.QDialog()
-            dialogProfileUi = Ui_CreateProfileDialog() # params
-            dialogProfileUi.setupUi(dialogProfile)
+            dialogProfileUi = Ui_CreateProfileDialog()
+            dialogProfileUi.setup_ui(dialogProfile)
             dialogProfile.setModal(True)
             if dialogProfile.exec_() == QMessageBox.Accepted:
                 self.userIn = True
                 self.user = dialogProfileUi.currentUser  
         
-    def onProfileStatisticsButtonClicked(self):
+    def on_profile_statistics_button_clicked(self):
         self.eventsList.setSelectionMode(QListView.NoSelection)
         self.eventsList.clicked.disconnect()
         self.model = QStandardItemModel()
@@ -265,10 +265,10 @@ class Ui_MainWindow(object):
         font.setWeight(75)
         button.setFont(font)
         button.setText("Выход в список")
-        button.clicked.connect(lambda: self.webView.page().runJavaScript(f"{self.map.map_variable_name}.fire('click');"))
+        button.clicked.connect(lambda: self.webView.page().runJavaScript(f"{self.map.mapVariableName}.fire('click');"))
         self.eventsList.setIndexWidget(self.model.index(1 + len(self.user.plannedEvents), 0), button)
 
-    def reloadMap(self):
+    def reload_map(self):
         coordinates = None
         if self.lastCoordinates != None:
             coordinates = self.lastCoordinates
@@ -279,11 +279,11 @@ class Ui_MainWindow(object):
             coordinates = (53.902287, 27.561824)
 
         self.map = Map(r"code\folium-map.html", coordinates, self.currentEvents)
-        self.map.position_changed.connect(self.refreshEventsOnMap)
-        self.map.marker_clicked.connect(self.showEventInfo)
+        self.map.position_changed.connect(self.refresh_events_on_map)
+        self.map.marker_clicked.connect(self.show_event_info)
         self.webView.load(QUrl.fromLocalFile(r"D:\EventsMap\code\folium-map.html"))
 
-    def selectionChangedHandler(self):
+    def selection_changed_handler(self):
         selected_indexes = self.eventsList.selectedIndexes()
 
         if selected_indexes and self.userIn:
@@ -297,32 +297,32 @@ class Ui_MainWindow(object):
             self.editButton.setEnabled(True)
             self.deleteEventButton.setEnabled(True)
 
-    def handleCoordinates(self, result):
+    def handle_coordinates(self, result):
         self.lastCoordinates = tuple(map(float, result.split(',')))
 
-    def onAddEventButtonClicked(self, edit = False):
-        self.webView.page().runJavaScript("getCenterCoordinates()", self.handleCoordinates)
+    def on_add_event_button_clicked(self, edit = False):
+        self.webView.page().runJavaScript("getCenterCoordinates()", self.handle_coordinates)
 
         dialogEvent = QtWidgets.QDialog()
         dialogEventUi = Ui_AddEventDialog()
-        dialogEventUi.setupUi(dialogEvent, self.user.name)
+        dialogEventUi.setup_ui(dialogEvent, self.user.name)
         if edit:
-            selected_indexes = self.eventsList.selectedIndexes()
-            if selected_indexes:
-                selected_item = selected_indexes[0].data()
+            selectedIndexes = self.eventsList.selectedIndexes()
+            if selectedIndexes:
+                selectedItem = selectedIndexes[0].data()
                 for event in self.currentEvents:
-                    if event.name == selected_item:
-                        dialogEventUi.enableEdit(event.name, event.description, event.datetime, event.address)
+                    if event.name == selectedItem:
+                        dialogEventUi.enable_edit(event.name, event.description, event.datetime, event.address)
                         break
         dialogEvent.setModal(True)
         if dialogEvent.exec_() == QMessageBox.Accepted:
             self.currentEvents.append(dialogEventUi.currentEvent)
-            self.reloadMap()
+            self.reload_map()
 
-    def onDeleteEventButtonClicked(self):
-        selected_indexes = self.eventsList.selectedIndexes()
-        if selected_indexes:
-            selected_item = selected_indexes[0].data()
+    def on_delete_event_button_clicked(self):
+        selectedIndexes = self.eventsList.selectedIndexes()
+        if selectedIndexes:
+            selectedItem = selectedIndexes[0].data()
 
             try:
                 with connect(
@@ -336,7 +336,7 @@ class Ui_MainWindow(object):
 
                             delete_event_query = f"""
                             DELETE FROM event
-                            WHERE name = '{selected_item}';
+                            WHERE name = '{selectedItem}';
                             """
                             cursor.execute(delete_event_query)
                             connection.commit()
@@ -346,7 +346,7 @@ class Ui_MainWindow(object):
                 connection.close()
 
 
-    def onItemClicked(self, index):
+    def on_item_clicked(self, index):
         selectedItem = self.model.itemFromIndex(index)
         if selectedItem:
             self.eventsList.setSelectionMode(QListView.NoSelection)
@@ -355,8 +355,8 @@ class Ui_MainWindow(object):
                 {self.map.markers[selectedItem.text()]}.fireEvent('click');
             ''')
 
-    def refreshEventsOnMap(self, rdlat, rdlng, lulat, lulng):
-        self.eventsList.clicked.connect(self.onItemClicked)
+    def refresh_events_on_map(self, rdlat, rdlng, lulat, lulng):
+        self.eventsList.clicked.connect(self.on_item_clicked)
         self.eventsList.setSelectionMode(QListView.SingleSelection)
         self.model = QStandardItemModel()
 
@@ -367,9 +367,9 @@ class Ui_MainWindow(object):
             
         self.eventsList.setModel(self.model)
         selection_model = self.eventsList.selectionModel()
-        selection_model.selectionChanged.connect(self.selectionChangedHandler)
+        selection_model.selectionChanged.connect(self.selection_changed_handler)
 
-    def showEventInfo(self, eventName):
+    def show_event_info(self, eventName):
         for event in self.currentEvents:
             if event.name == eventName:
 
@@ -415,7 +415,7 @@ class Ui_MainWindow(object):
                         button.setEnabled(False)
                     else:
                         button.setText("Посетить событие")
-                        button.clicked.connect(lambda: self.onAddVisitButtonClicked(event))
+                        button.clicked.connect(lambda: self.on_add_visit_button_clicked(event))
                     
                     self.eventsList.setIndexWidget(self.model.index(6 + len(event.visitors), 0), button)
 
@@ -429,22 +429,21 @@ class Ui_MainWindow(object):
                 font.setWeight(75)
                 bbutton.setFont(font)
                 bbutton.setText("Выход в список")
-                bbutton.clicked.connect(lambda: self.webView.page().runJavaScript(f"{self.map.map_variable_name}.fire('click');"))
+                bbutton.clicked.connect(lambda: self.webView.page().runJavaScript(f"{self.map.mapVariableName}.fire('click');"))
                 self.eventsList.setIndexWidget(self.model.index((7 if self.userIn else 6) + len(event.visitors), 0), bbutton)
                 break
     
-    def onAddVisitButtonClicked(self, event):
-        self.user.addEvent(event)
+    def on_add_visit_button_clicked(self, event):
+        self.user.add_event(event)
         self.webView.page().runJavaScript(f'''
                 {self.map.markers[event.name]}.fireEvent('click');
             ''')
-
 
 if __name__ == "__main__":
     import sys
     app = QtWidgets.QApplication(sys.argv)
     MainWindow = QtWidgets.QMainWindow()
     ui = Ui_MainWindow()
-    ui.setupUi(MainWindow)
+    ui.setup_ui(MainWindow)
     MainWindow.show()
     sys.exit(app.exec_())

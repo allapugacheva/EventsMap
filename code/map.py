@@ -6,8 +6,8 @@ from PyQt5.QtCore import QObject, pyqtSignal
 import threading
 
 class FoliumServer(BaseHTTPRequestHandler):
-    def __init__(self, *args, map_instance=None, **kwargs):
-        self.map_instance = map_instance
+    def __init__(self, *args, mapInstance=None, **kwargs):
+        self.mapInstance = mapInstance
         super().__init__(*args, **kwargs)
 
     def _set_response(self):
@@ -16,17 +16,17 @@ class FoliumServer(BaseHTTPRequestHandler):
         self.end_headers()
 
     def do_POST(self):
-        content_length = int(self.headers['Content-Length'])
-        post_data = self.rfile.read(content_length)
+        contentLength = int(self.headers['Content-Length'])
+        postData = self.rfile.read(contentLength)
 
-        json_data = post_data.decode("utf-8")
+        jsonData = postData.decode("utf-8")
         
         try:
-            data = json.loads(json_data)
-            if 'name' in data and self.map_instance:
-                self.map_instance.marker_clicked.emit(data['name'])
+            data = json.loads(jsonData)
+            if 'name' in data and self.mapInstance:
+                self.mapInstance.marker_clicked.emit(data['name'])
             else:
-                self.map_instance.position_changed.emit(data['northWest']['lat'], data['northWest']['lng'], data['southEast']['lat'], data['southEast']['lng'])
+                self.mapInstance.position_changed.emit(data['northWest']['lat'], data['northWest']['lng'], data['southEast']['lat'], data['southEast']['lng'])
         except json.JSONDecodeError:
             pass
         
@@ -37,7 +37,7 @@ class Map(QObject):
     position_changed = pyqtSignal(float, float, float, float)
     marker_clicked = pyqtSignal(str)
 
-    def __init__(self, map_filepath, coordinate, events, folium_port=3001):
+    def __init__(self, mapFilepath, coordinate, events, foliumPort=3001):
         super().__init__()
 
         self.map = folium.Map(coordinate, zoom_start=13)
@@ -49,79 +49,78 @@ class Map(QObject):
                 tooltip=event.name
             ).add_to(self.map)
 
-        self.map.save(map_filepath)
+        self.map.save(mapFilepath)
 
         self.html = None
-        with open(map_filepath, 'r', encoding='utf-8') as mapfile:
+        with open(mapFilepath, 'r', encoding='utf-8') as mapfile:
             self.html = mapfile.read()
 
         if events:
-            self.findAllMarkersName()
+            self.find_all_markers_name()
 
-        self.map_variable_name = self.find_variable_name(self.html, "map_")
+        self.mapVariableName = self.find_variable_name(self.html, "map_")
 
         pend = self.find_end_of_slice(self.html, "L.map")
-        self.html = self.html[:pend] + self.custom_map_code(self.map_variable_name, folium_port) + self.html[pend + 1:]
+        self.html = self.html[:pend] + self.custom_map_code(self.mapVariableName, foliumPort) + self.html[pend + 1:]
 
         if events: 
             for key, value in self.markers.items():
                 pend = self.find_end_of_slice(self.html, f"{value}.bindTooltip")
                 self.html = self.html[:pend] + self.custom_marker_handler(value, key) + self.html[pend + 1:]
 
-        with open(map_filepath, 'w', encoding='utf-8') as mapfile:
+        with open(mapFilepath, 'w', encoding='utf-8') as mapfile:
             mapfile.write(self.html)
 
         self.listen_to_folium_map()
 
     def find_end_of_slice(self, html, pattern):
 
-        start_index = html.find(pattern)
-        tmp_html = html[start_index:]
+        startIndex = html.find(pattern)
+        tmpHtml = html[startIndex:]
 
         found = 0
         index = 0
-        opening_found = False
-        while not opening_found or found > 0:
-            if tmp_html[index] == "(":
+        openingFound = False
+        while not openingFound or found > 0:
+            if tmpHtml[index] == "(":
                 found += 1
-                opening_found = True
-            elif tmp_html[index] == ")":
+                openingFound = True
+            elif tmpHtml[index] == ")":
                 found -= 1
 
             index += 1
-        end_index = start_index + index + 1
+        endIndex = startIndex + index + 1
 
-        return end_index    
+        return endIndex    
 
-    def find_variable_name(self, html, name_start):
+    def find_variable_name(self, html, nameStart):
     
-        variable_pattern = "var "
-        pattern = variable_pattern + name_start
+        pattern = "var " + nameStart
 
-        start_index = html.find(pattern) + 4
-        tmp_html = html[start_index:]
-        end_index = tmp_html.find(" =") + start_index
+        startIndex = html.find(pattern) + 4
+        tmpHtml = html[startIndex:]
+        endIndex = tmpHtml.find(" =") + startIndex
 
-        return html[start_index:end_index]
+        return html[startIndex:endIndex]
 
-    def findAllMarkersName(self):
+    def find_all_markers_name(self):
 
-        start_index = self.html.find("var marker_")
-        tmp_html = self.html[start_index:]
-        start_index = 0
-        while start_index != -1:
-            end_index = tmp_html.find(" =")
-            marker_name = tmp_html[start_index + 4:end_index]
+        startIndex = self.html.find("var marker_")
+        tmpHtml = self.html[startIndex:]
+        startIndex = 0
+        while startIndex != -1:
+            endIndex = tmpHtml.find(" =")
+            markerName = tmpHtml[startIndex + 4:endIndex]
 
-            start_index = tmp_html.find("<div>")
-            end_index = tmp_html.find("</div>")
-            marker_tooltip = tmp_html[start_index + 5:end_index].replace('\n', '').lstrip().rstrip()
-            self.markers[marker_tooltip] = marker_name
+            startIndex = tmpHtml.find("<div>")
+            endIndex = tmpHtml.find("</div>")
+            markerTooltip = tmpHtml[startIndex + 5:endIndex].replace('\n', '').lstrip().rstrip()
+            self.markers[markerTooltip] = markerName
 
-            tmp_html = tmp_html[end_index + 6:]
-            start_index = tmp_html.find("var marker_")
+            tmpHtml = tmpHtml[endIndex + 6:]
+            startIndex = tmpHtml.find("var marker_")
 
-    def custom_marker_handler(self, marker_variable_name, marker_tooltip):
+    def custom_marker_handler(self, markerVariableName, markerTooltip):
         return '''               
             %s.on('click', function(event) {
 
@@ -134,9 +133,9 @@ class Map(QObject):
 
                 sendMarkerName('%s')
             });
-        ''' % (marker_variable_name,marker_variable_name,marker_variable_name,marker_tooltip)
+        ''' % (markerVariableName,markerVariableName,markerVariableName,markerTooltip)
 
-    def custom_map_code(self, map_variable_name, folium_port):
+    def custom_map_code(self, mapVariableName, foliumPort):
         return '''
             function handleMapChanges(event) {
                 if(lastSelectedMarker) {
@@ -204,14 +203,14 @@ class Map(QObject):
                     })
                 });
             }
-        ''' % (map_variable_name, folium_port, map_variable_name, map_variable_name, map_variable_name, folium_port)
+        ''' % (mapVariableName, foliumPort, mapVariableName, mapVariableName, mapVariableName, foliumPort)
 
     def listen_to_folium_map(self, port=3001):
-        server_address = ('', port)
-        self.httpd = HTTPServer(server_address, lambda *args, **kwargs: FoliumServer(*args, map_instance=self, **kwargs))
+        serverAddress = ('', port)
+        self.httpd = HTTPServer(serverAddress, lambda *args, **kwargs: FoliumServer(*args, mapInstance=self, **kwargs))
 
         thread = threading.Thread(target=self.httpd.serve_forever)
-        thread.daemon = True  # Позволяем потоку завершиться, когда основная программа завершится
+        thread.daemon = True
         thread.start()
 
     def __del__(self):

@@ -6,7 +6,7 @@ from PyQt5.QtWidgets import QMessageBox
 from geopy.geocoders import Nominatim
 
 class Ui_CreateProfileDialog(object):
-    def setupUi(self, CreateProfileDialog):
+    def setup_ui(self, CreateProfileDialog):
         CreateProfileDialog.setObjectName("CreateProfileDialog")
         CreateProfileDialog.setFixedSize(340, 275)
         CreateProfileDialog.setWindowTitle("Вход в профиль")
@@ -21,7 +21,7 @@ class Ui_CreateProfileDialog(object):
         self.createButton.setFont(font)
         self.createButton.setObjectName("createButton")
         self.createButton.setText("Войти")
-        self.createButton.clicked.connect(self.onCreateButtonClicked)
+        self.createButton.clicked.connect(self.on_create_button_clicked)
 
         self.cancelButton = QtWidgets.QPushButton(CreateProfileDialog)
         self.cancelButton.setGeometry(QtCore.QRect(180, 225, 130, 35))
@@ -80,6 +80,7 @@ class Ui_CreateProfileDialog(object):
         font.setWeight(75)
         self.addressLine.setFont(font)
         self.addressLine.setObjectName("cityLine")
+
         self.addressLabel = QtWidgets.QLabel(CreateProfileDialog)
         self.addressLabel.setGeometry(QtCore.QRect(20, 150, 200, 30))
         font = QtGui.QFont()
@@ -90,12 +91,12 @@ class Ui_CreateProfileDialog(object):
         self.addressLabel.setObjectName("addressLabel")
         self.addressLabel.setText("Область поиска:")
 
-    def onCreateButtonClicked(self):
+    def on_create_button_clicked(self):
         try:
+            if self.passwordLine.text().strip() == "":
+                raise ValueError("Укажите пароль")
             if self.nameLine.text().strip() == "":
                 raise ValueError("Укажите имя")
-            if self.passwordLine.text().strip == "":
-                raise ValueError("Укажите пароль")
             if self.addressLine.text().strip() == "":
                 raise ValueError("Укажите область поиска")
 
@@ -117,6 +118,6 @@ if __name__ == "__main__":
     app = QtWidgets.QApplication(sys.argv)
     CreateProfileDialog = QtWidgets.QDialog()
     ui = Ui_CreateProfileDialog()
-    ui.setupUi(CreateProfileDialog)
+    ui.setup_ui(CreateProfileDialog)
     CreateProfileDialog.show()
     sys.exit(app.exec_())

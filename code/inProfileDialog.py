@@ -4,7 +4,7 @@ from PyQt5.QtWidgets import QMessageBox
 from mysql.connector import Error
 
 class Ui_inProfileDialog(object):
-    def setupUi(self, inProfileDialog):
+    def setup_ui(self, inProfileDialog):
         inProfileDialog.setObjectName("inProfileDialog")
         inProfileDialog.resize(340, 205)
         inProfileDialog.setWindowTitle("Войти")
@@ -57,7 +57,7 @@ class Ui_inProfileDialog(object):
         self.createButton.setFont(font)
         self.createButton.setObjectName("createButton")
         self.createButton.setText("Войти")
-        self.createButton.clicked.connect(self.onInButtonClicked)
+        self.createButton.clicked.connect(self.on_in_button_clicked)
         
         self.cancelButton = QtWidgets.QPushButton(inProfileDialog)
         self.cancelButton.setGeometry(QtCore.QRect(180, 155, 130, 35))
@@ -70,7 +70,7 @@ class Ui_inProfileDialog(object):
         self.cancelButton.setText("Отмена")
         self.cancelButton.clicked.connect(self.inProfileDialog.close)
 
-    def onInButtonClicked(self):
+    def on_in_button_clicked(self):
         try:
             if self.nameLine.text().strip() == "":
                 raise ValueError("Введите имя")
@@ -89,6 +89,6 @@ if __name__ == "__main__":
     app = QtWidgets.QApplication(sys.argv)
     inProfileDialog = QtWidgets.QDialog()
     ui = Ui_inProfileDialog()
-    ui.setupUi(inProfileDialog)
+    ui.setup_ui(inProfileDialog)
     inProfileDialog.show()
     sys.exit(app.exec_())

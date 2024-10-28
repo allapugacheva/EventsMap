@@ -25,7 +25,7 @@
             <meta name="viewport" content="width=device-width,
                 initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
             <style>
-                #map_96cc79fd51a533d6897f007a7f4457c9 {
+                #map_f64e913fad3ed2d0defc21d394983095 {
                     position: relative;
                     width: 100.0%;
                     height: 100.0%;
@@ -39,16 +39,16 @@
 <body>
     
     
-            <div class="folium-map" id="map_96cc79fd51a533d6897f007a7f4457c9" ></div>
+            <div class="folium-map" id="map_f64e913fad3ed2d0defc21d394983095" ></div>
         
 </body>
 <script>
     
     
-            var map_96cc79fd51a533d6897f007a7f4457c9 = L.map(
-                "map_96cc79fd51a533d6897f007a7f4457c9",
+            var map_f64e913fad3ed2d0defc21d394983095 = L.map(
+                "map_f64e913fad3ed2d0defc21d394983095",
                 {
-                    center: [53.1630039, 26.0284252],
+                    center: [53.902287, 27.561824],
                     crs: L.CRS.EPSG3857,
                     zoom: 13,
                     zoomControl: true,
@@ -61,7 +61,7 @@
                     lastSelectedMarker = null;
                 }
 
-                var bounds = map_96cc79fd51a533d6897f007a7f4457c9.getBounds();
+                var bounds = map_f64e913fad3ed2d0defc21d394983095.getBounds();
 
                 var northWest = bounds.getNorthWest();
                 var southEast = bounds.getSouthEast();
@@ -86,12 +86,12 @@
                 });                
             }
 
-            map_96cc79fd51a533d6897f007a7f4457c9.on('moveend', handleMapChanges);
+            map_f64e913fad3ed2d0defc21d394983095.on('moveend', handleMapChanges);
 
-            map_96cc79fd51a533d6897f007a7f4457c9.on('click', handleMapChanges);
+            map_f64e913fad3ed2d0defc21d394983095.on('click', handleMapChanges);
 
             function getCenterCoordinates() {
-                var center = map_96cc79fd51a533d6897f007a7f4457c9.getCenter();
+                var center = map_f64e913fad3ed2d0defc21d394983095.getCenter();
                 return center.lat + ', ' + center.lng;
             }
 
@@ -126,38 +126,13 @@
 
         
     
-            var tile_layer_4f5f707120af067bb41ae387adf177e0 = L.tileLayer(
+            var tile_layer_c24292421739bb5dc37812d30d82e5f8 = L.tileLayer(
                 "https://tile.openstreetmap.org/{z}/{x}/{y}.png",
                 {"attribution": "\u0026copy; \u003ca href=\"https://www.openstreetmap.org/copyright\"\u003eOpenStreetMap\u003c/a\u003e contributors", "detectRetina": false, "maxNativeZoom": 19, "maxZoom": 19, "minZoom": 0, "noWrap": false, "opacity": 1, "subdomains": "abc", "tms": false}
             );
         
     
-            tile_layer_4f5f707120af067bb41ae387adf177e0.addTo(map_96cc79fd51a533d6897f007a7f4457c9);
+            tile_layer_c24292421739bb5dc37812d30d82e5f8.addTo(map_f64e913fad3ed2d0defc21d394983095);
         
-    
-            var marker_1d42ed6fa17f674286036ac6cbb2793e = L.marker(
-                [53.1642, 26.0254],
-                {}
-            ).addTo(map_96cc79fd51a533d6897f007a7f4457c9);
-        
-    
-            marker_1d42ed6fa17f674286036ac6cbb2793e.bindTooltip(
-                `<div>
-                     сходка мопсов
-                 </div>`,
-                {"sticky": true}
-            );               
-            marker_1d42ed6fa17f674286036ac6cbb2793e.on('click', function(event) {
-
-                if(lastSelectedMarker) {
-                    lastSelectedMarker.setIcon(defaultIcon);
-                }
-
-                marker_1d42ed6fa17f674286036ac6cbb2793e.setIcon(redIcon);
-                lastSelectedMarker = marker_1d42ed6fa17f674286036ac6cbb2793e;
-
-                sendMarkerName('сходка мопсов')
-            });
-                
 </script>
 </html>

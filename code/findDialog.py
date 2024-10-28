@@ -5,7 +5,7 @@ from geopy.geocoders import Nominatim
 from PyQt5.QtCore import QDate
 
 class Ui_FindDialog(object):
-    def setupUi(self, FindDialog, events):
+    def setup_ui(self, FindDialog, events):
         FindDialog.setObjectName("FindDialog")
         FindDialog.resize(340, 300)
         FindDialog.setWindowTitle("Поиск")
@@ -57,7 +57,7 @@ class Ui_FindDialog(object):
         font.setWeight(75)
         self.nameLine.setFont(font)
         self.nameLine.setObjectName("nameLine")
-        self.nameLine.textChanged.connect(self.onNameChanged)
+        self.nameLine.textChanged.connect(self.on_name_changed)
 
         self.nameLabel = QtWidgets.QLabel(self.nameFind)
         self.nameLabel.setGeometry(QtCore.QRect(20, 10, 200, 30))
@@ -109,7 +109,7 @@ class Ui_FindDialog(object):
         self.dateEdit.setButtonSymbols(QtWidgets.QAbstractSpinBox.NoButtons)
         self.dateEdit.setObjectName("dateEdit")
         self.dateEdit.setCalendarPopup(True)
-        self.dateEdit.dateChanged.connect(self.onDateChanged)
+        self.dateEdit.dateChanged.connect(self.on_date_changed)
 
         self.eventsDateList = QtWidgets.QListView(self.dateFind)
         self.eventsDateList.setGeometry(QtCore.QRect(20, 70, 300, 140))
@@ -129,7 +129,7 @@ class Ui_FindDialog(object):
         self.findButton.setFont(font)
         self.findButton.setObjectName("findButton")
         self.findButton.setText("Найти")
-        self.findButton.clicked.connect(self.onFindButtonClicked)
+        self.findButton.clicked.connect(self.on_find_button_clicked)
 
         self.cancelButton = QtWidgets.QPushButton(FindDialog)
         self.cancelButton.setGeometry(QtCore.QRect(180, 250, 130, 35))
@@ -149,7 +149,7 @@ class Ui_FindDialog(object):
         self.tabWidget.setTabText(self.tabWidget.indexOf(self.nameFind), "По названию")
         self.tabWidget.setTabText(self.tabWidget.indexOf(self.dateFind), "По дате")
 
-    def onNameChanged(self, text):
+    def on_name_changed(self, text):
         model = QStandardItemModel()
         for event in self.events:
             if text in event.name or text == "":
@@ -157,7 +157,7 @@ class Ui_FindDialog(object):
                 model.appendRow(item)
         self.eventsList.setModel(model) 
 
-    def onDateChanged(self):
+    def on_date_changed(self):
         model = QStandardItemModel()
         for event in self.events:
             if self.dateEdit.date().toString("yyyy-MM-dd") == event.datetime.split(" ")[0]:
@@ -165,7 +165,7 @@ class Ui_FindDialog(object):
                 model.appendRow(item)
         self.eventsDateList.setModel(model)
 
-    def onFindButtonClicked(self):
+    def on_find_button_clicked(self):
         try: 
             if self.tabWidget.currentIndex() == 0:
                 if self.addressLine.text().strip() == "":
@@ -203,6 +203,6 @@ if __name__ == "__main__":
     app = QtWidgets.QApplication(sys.argv)
     FindDialog = QtWidgets.QDialog()
     ui = Ui_FindDialog()
-    ui.setupUi(FindDialog)
+    ui.setup_ui(FindDialog)
     FindDialog.show()
     sys.exit(app.exec_())

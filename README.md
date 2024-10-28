@@ -5,3 +5,5 @@
 [Требования к проекту](https://github.com/allapugacheva/EventsMap/blob/main/docs/SRS.md)  
 
 [Диаграммы](https://github.com/allapugacheva/EventsMap/blob/main/diagrams)
+
+[Тестирование](https://github.com/allapugacheva/EventsMap/blob/main/tests)

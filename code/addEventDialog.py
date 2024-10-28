@@ -6,7 +6,7 @@ from mysql.connector import Error
 from PyQt5.QtCore import QDateTime
 
 class Ui_AddEventDialog(object):
-    def setupUi(self, AddEventDialog, user):
+    def setup_ui(self, AddEventDialog, user):
         AddEventDialog.setObjectName("AddEventDialog")
         AddEventDialog.setFixedSize(340, 345)
         AddEventDialog.setWindowTitle("Добавление события")
@@ -101,7 +101,7 @@ class Ui_AddEventDialog(object):
         self.addButton.setFont(font)
         self.addButton.setObjectName("addButton")
         self.addButton.setText("Добавить")
-        self.addButton.clicked.connect(self.onAddButtonClicked)
+        self.addButton.clicked.connect(self.on_add_button_clicked)
 
         self.cancelButton = QtWidgets.QPushButton(AddEventDialog)
         self.cancelButton.setGeometry(QtCore.QRect(180, 295, 130, 35))
@@ -114,14 +114,14 @@ class Ui_AddEventDialog(object):
         self.cancelButton.setText("Отмена")
         self.cancelButton.clicked.connect(AddEventDialog.close)
 
-    def enableEdit(self, name, description, datetime, address):
+    def enable_edit(self, name, description, datetime, address):
         self.enableEdit = True
         self.eventNameLine.setText(name)
         self.descriptionLine.setText(description)
         self.dateTimeEdit.setDateTime(QDateTime.fromString(datetime, "yyyy-MM-dd HH:mm"))
         self.addressLine.setText(address)
 
-    def onAddButtonClicked(self):
+    def on_add_button_clicked(self):
         try:
             if self.dateTimeEdit.dateTime() < QDateTime.currentDateTime():
                 raise ValueError("Событие не может быть в прошлом")
@@ -139,7 +139,7 @@ class Ui_AddEventDialog(object):
                 if self.edit:
                     self.currentEvent = Event(self.eventNameLine.text(), self.descriptionLine.text(), self.dateTimeEdit.dateTime().toString("yyyy-MM-dd HH:mm"), self.addressLine.text(), location.latitude, location.longitude)
                 else:
-                    self.currentEvent = Event(self.eventNameLine.text(), self.descriptionLine.text(), self.user, self.dateTimeEdit.dateTime().toString("yyyy-MM-dd HH:mm"), self.addressLine.text(), location.latitude, location.longitude)
+                    self.currentEvent = Event(self.eventNameLine.text(), self.descriptionLine.text(), self.dateTimeEdit.dateTime().toString("yyyy-MM-dd HH:mm"), self.addressLine.text(), location.latitude, location.longitude, self.user)
                 self.AddEventDialog.accept()
             else:
                 raise ValueError("Адрес не найден")
@@ -154,6 +154,6 @@ if __name__ == "__main__":
     app = QtWidgets.QApplication(sys.argv)
     AddEventDialog = QtWidgets.QDialog()
     ui = Ui_AddEventDialog()
-    ui.setupUi(AddEventDialog)
+    ui.setup_ui(AddEventDialog)
     AddEventDialog.show()
     sys.exit(app.exec_())
